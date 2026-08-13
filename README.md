@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bday-recap — 성호 생일 축하 페이지 (v1)
 
-## Getting Started
+BOYNEXTDOOR 성호(2026-09-04) 생일을 위한 온라인 생일 페이지. 카운트다운 + 롤링페이퍼가 v1 범위이고, AI 리캡 카드는 2주차에 추가.
 
-First, run the development server:
+## 로컬에서 실행하기
 
 ```bash
+npm install
+cp .env.local.example .env.local   # 값은 아직 비워둬도 됨(미리보기 모드로 동작)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`http://localhost:3000` 접속. Supabase 키를 아직 안 넣었으면 메시지는 새로고침하면 사라지는 "미리보기 모드"로 동작한다 — 정상.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 실제로 저장되게 하려면 (Supabase 연결)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. [supabase.com](https://supabase.com) 에서 무료 프로젝트 생성
+2. SQL Editor에서 `sql/schema.sql` 내용을 그대로 실행
+3. Project Settings > API 에서 URL, anon key 확인
+4. `.env.local` 에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 채우기
+5. 서버 재시작(`npm run dev`) — 이제 실제로 저장됨
 
-## Learn More
+## 배포 (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+1. 이 폴더를 GitHub 레포로 push
+2. [vercel.com](https://vercel.com) 에서 GitHub 레포 Import
+3. Vercel 프로젝트 설정 > Environment Variables 에 `.env.local`과 동일한 키들 등록
+4. Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 아티스트/테마 바꾸기 (다음 생일 때 재사용)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`config/artist.ts` 하나만 새 아티스트 정보로 교체하면 됨.
 
-## Deploy on Vercel
+## 할 일 (진행 상황)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] 프로젝트 스캐폴딩, 카운트다운, 롤링페이퍼 UI
+- [ ] Day 3: 실제 컬러 팔레트/폰트 적용 (`config/artist.ts`, `app/layout.tsx`의 TODO 참고)
+- [ ] OG 이미지 (`public/og-image.png`, 1200x630) 추가
+- [ ] 2주차: AI 리캡 카드 생성 로직
+- [ ] 3주차: 메시지 필터 강화, 베타 테스트, 실제 배포
