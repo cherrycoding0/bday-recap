@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Countdown } from "@/components/Countdown";
 import { RollingPaper } from "@/components/RollingPaper";
 import { RecapCard } from "@/components/RecapCard";
@@ -18,6 +18,18 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
   const bump = () => setRefreshKey((k) => k + 1);
   const admin = useAdmin();
+
+  // 유형 테스트를 마쳐야 메시지 폼이 열린다 (새로고침해도 유지)
+  const [quizDone, setQuizDone] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("quiz-done") === "1") setQuizDone(true);
+    } catch { /* sessionStorage 불가 환경 무시 */ }
+  }, []);
+  function handleQuizCompleted() {
+    setQuizDone(true);
+    try { sessionStorage.setItem("quiz-done", "1"); } catch { /* 무시 */ }
+  }
 
   return (
     <div
@@ -50,13 +62,14 @@ export default function Home() {
 
         <PhotoHeart />
 
-        <Quiz onMessagePosted={bump} />
+        <Quiz onMessagePosted={bump} onCompleted={handleQuizCompleted} />
 
         <RollingPaper
           onMessagePosted={bump}
           refreshKey={refreshKey}
           isAdmin={admin.isAdmin}
           onDelete={admin.deleteMessage}
+          showForm={quizDone}
         />
 
         <RecapCard />

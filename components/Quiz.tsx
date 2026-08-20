@@ -11,7 +11,7 @@ import { renderCard } from "@/lib/cardImage";
 
 type Step = "intro" | "quiz" | "result" | "card";
 
-export function Quiz({ onMessagePosted }: { onMessagePosted?: () => void }) {
+export function Quiz({ onMessagePosted, onCompleted }: { onMessagePosted?: () => void; onCompleted?: () => void }) {
   const [step, setStep] = useState<Step>("intro");
   const [qIndex, setQIndex] = useState(0);
   const [tension, setTension] = useState(0);
@@ -41,6 +41,7 @@ export function Quiz({ onMessagePosted }: { onMessagePosted?: () => void }) {
       setResult(type);
       setPart(pickPart(type));
       setStep("result");
+      onCompleted?.();
     }
   }
 

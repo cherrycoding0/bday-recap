@@ -12,7 +12,7 @@ type AdminProps = {
   onDelete?: (id: string) => Promise<boolean>;
 };
 
-export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete }: { onMessagePosted?: () => void; refreshKey?: number } & AdminProps) {
+export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, showForm = true }: { onMessagePosted?: () => void; refreshKey?: number; showForm?: boolean } & AdminProps) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [nickname, setNickname] = useState("");
@@ -90,6 +90,15 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete }:
 
   return (
     <div className="w-full max-w-2xl">
+      {!showForm && (
+        <div
+          className="rounded-2xl border border-dashed p-5 text-sm text-zinc-500"
+          style={{ borderColor: "var(--artist-primary)", backgroundColor: "var(--artist-card)" }}
+        >
+          💌 위의 <b style={{ color: "var(--artist-primary)" }}>유형 테스트</b>를 마치면 축하 메시지를 남길 수 있어요!
+        </div>
+      )}
+      {showForm && (
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-3 rounded-2xl p-4 sm:p-5 shadow-sm"
@@ -126,6 +135,7 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete }:
           </p>
         )}
       </form>
+      )}
 
       {usingSupabase && messages.length > 0 && (
         <div className="mt-5 flex gap-1.5">

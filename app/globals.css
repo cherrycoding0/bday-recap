@@ -31,20 +31,7 @@ body {
   font-family: "NeoDunggeunmo", sans-serif;
 }
 
-/* 상단 메시지 띠배너 */
-@keyframes ticker-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.ticker-track {
-  animation: ticker-scroll 40s linear infinite;
-}
-.ticker-wrap:hover .ticker-track {
-  animation-play-state: paused;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; }
-}
+/* 상단 메시지 띠배너: JS(requestAnimationFrame) 구동 — MessageTicker.tsx 참고 */
 
 /* 폴라로이드 포토 슬라이드 */
 .polaroid {
@@ -53,6 +40,9 @@ body {
 }
 .polaroid:hover {
   transform: rotate(0deg) scale(1.02);
+}
+.polaroid:active {
+  transform: rotate(0deg) scale(0.97); /* 모바일 탭 피드백 */
 }
 @keyframes photo-fade {
   from { opacity: 0; }
