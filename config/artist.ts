@@ -4,18 +4,22 @@
 export const artistConfig = {
   name: "성호",
   groupName: "BOYNEXTDOOR",
-  fandomName: "원도어",
+  fandomName: "ONEDOOR",
   // 실제 생일: 2003-09-04. 페이지에서 카운트다운할 "이번 생일" 날짜(연도는 올해로).
   birthdayThisYear: "2026-09-04T00:00:00+09:00",
-  // Day 3(컬러 팔레트 확정) 이후 아래 값을 실제 팔레트로 교체하세요.
+  // Day 3 확정 팔레트 — 성호의 최애 색 '라이트 퍼플' 기반 라벤더 팔레트.
+  // (출처: Melon TMI 인터뷰 — 성호: Light Purple)
   themeColor: {
-    primary: "#7C6BEB", // 임시 컬러 — 앨범/컨셉 사진에서 추출한 컬러로 교체
-    secondary: "#F5F3FF",
-    text: "#1F1B3D",
+    primary: "#7B68E8", // 라벤더 — 버튼, 포인트 텍스트
+    primaryDeep: "#5747B8", // 진한 라벤더 — 호버, 강조
+    secondary: "#F4F1FF", // 아주 연한 라벤더 — 페이지 배경
+    card: "#FFFFFF", // 카드/타일 배경 (배경 위에서 분리되도록 흰색)
+    accent: "#FFB86B", // 살구빛 포인트 — 생일 케이크/컨페티 느낌
+    text: "#2A2350", // 본문 텍스트 — 남보라 톤 다크
   },
   // 비공식 팬 프로젝트 고지문 — 문구는 자유롭게 다듬어도 되지만 반드시 남겨둘 것
   disclaimer:
-    "이 페이지는 팬이 만든 비공식 팬 프로젝트입니다. 소속사/아티스트 측 요청 시 즉시 비공개 처리합니다.",
+    "이 페이지는 팬이 만든 비공식 팬 프로젝트입니다.",
 } as const;
 
 export type ArtistConfig = typeof artistConfig;
