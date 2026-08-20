@@ -38,7 +38,7 @@ export default function Home() {
             className="font-display text-4xl sm:text-5xl"
             style={{ color: "var(--artist-text)" }}
           >
-            {artistConfig.name} 생일 축하 페이지 🎂
+            {artistConfig.name} 🎂
           </h1>
         </div>
 
