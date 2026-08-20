@@ -1,0 +1,9 @@
+# 줄바꿈 통일: 텍스트 파일은 저장소에 LF로, 체크아웃은 OS 기본에 따름
+* text=auto
+
+# 바이너리는 손대지 않음
+*.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.svg -text
