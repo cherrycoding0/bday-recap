@@ -12,7 +12,7 @@ type AdminProps = {
   onDelete?: (id: string) => Promise<boolean>;
 };
 
-export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, showForm = true }: { onMessagePosted?: () => void; refreshKey?: number; showForm?: boolean } & AdminProps) {
+export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, showForm = true, meter }: { onMessagePosted?: () => void; refreshKey?: number; showForm?: boolean; meter?: React.ReactNode } & AdminProps) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [nickname, setNickname] = useState("");
@@ -136,6 +136,8 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
         )}
       </form>
       )}
+
+      {meter && <div className="mt-4">{meter}</div>}
 
       {usingSupabase && messages.length > 0 && (
         <div className="mt-5 flex gap-1.5">

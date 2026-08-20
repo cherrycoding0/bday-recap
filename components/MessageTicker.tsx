@@ -76,11 +76,12 @@ export function MessageTicker({ refreshKey }: { refreshKey: number }) {
   ));
 
   return (
-    <div
-      className="ticker-wrap w-full overflow-hidden py-2"
-      style={{ backgroundColor: "var(--artist-primary)" }}
-      aria-hidden
-    >
+    <div className="w-full px-4 pt-4">
+      <div
+        className="ticker-wrap mx-auto w-full max-w-2xl overflow-hidden rounded-full py-2"
+        style={{ backgroundColor: "var(--artist-primary)" }}
+        aria-hidden
+      >
       <div ref={trackRef} className="flex w-max gap-8 will-change-transform">
         {/* 매끄러운 무한 루프를 위해 두 벌 렌더 */}
         {[0, 1].map((dup) => (
@@ -92,6 +93,7 @@ export function MessageTicker({ refreshKey }: { refreshKey: number }) {
             ))}
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

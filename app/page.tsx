@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Countdown } from "@/components/Countdown";
 import { RollingPaper } from "@/components/RollingPaper";
 import { RecapCard } from "@/components/RecapCard";
@@ -19,17 +19,9 @@ export default function Home() {
   const bump = () => setRefreshKey((k) => k + 1);
   const admin = useAdmin();
 
-  // 유형 테스트를 마쳐야 메시지 폼이 열린다 (새로고침해도 유지)
+  // 유형 테스트 결과 화면에 있는 동안만 메시지 폼이 열린다.
+  // 테스트를 다시 시작하면 폼도 다시 닫힘 (새로고침해도 처음부터).
   const [quizDone, setQuizDone] = useState(false);
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem("quiz-done") === "1") setQuizDone(true);
-    } catch { /* sessionStorage 불가 환경 무시 */ }
-  }, []);
-  function handleQuizCompleted() {
-    setQuizDone(true);
-    try { sessionStorage.setItem("quiz-done", "1"); } catch { /* 무시 */ }
-  }
 
   return (
     <div
@@ -58,11 +50,9 @@ export default function Home() {
 
         <Countdown targetISO={artistConfig.birthdayThisYear} />
 
-        <GoalMeter refreshKey={refreshKey} />
-
         <PhotoHeart />
 
-        <Quiz onMessagePosted={bump} onCompleted={handleQuizCompleted} />
+        <Quiz onMessagePosted={bump} onCompleted={() => setQuizDone(true)} onRestart={() => setQuizDone(false)} />
 
         <RollingPaper
           onMessagePosted={bump}
@@ -70,6 +60,7 @@ export default function Home() {
           isAdmin={admin.isAdmin}
           onDelete={admin.deleteMessage}
           showForm={quizDone}
+          meter={<GoalMeter refreshKey={refreshKey} />}
         />
 
         <RecapCard />
