@@ -64,3 +64,13 @@ body {
 .rt-new {
   animation: rt-glow 2.5s ease-out;
 }
+
+/* 생일 케이크 촛불 */
+@keyframes candle-flicker {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50% { transform: rotate(2deg) scale(1.08); }
+}
+.candle-lit {
+  display: inline-block;
+  animation: candle-flicker 0.6s ease-in-out infinite;
+}

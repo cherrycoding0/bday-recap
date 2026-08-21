@@ -10,6 +10,7 @@ import { BirthdayMode } from "@/components/BirthdayMode";
 import { MessageTicker } from "@/components/MessageTicker";
 import { AdminLogin } from "@/components/AdminLogin";
 import { PhotoHeart } from "@/components/PhotoHeart";
+import { WorldCup } from "@/components/WorldCup";
 import { useAdmin } from "@/lib/useAdmin";
 import { track } from "@/lib/track";
 import { artistConfig } from "@/config/artist";
@@ -56,6 +57,8 @@ export default function Home() {
         <Countdown targetISO={artistConfig.birthdayThisYear} />
 
         <PhotoHeart />
+
+        <WorldCup />
 
         <Quiz onMessagePosted={bump} onCompleted={() => setQuizDone(true)} onRestart={() => setQuizDone(false)} />
 

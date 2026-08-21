@@ -6,6 +6,7 @@ export const artistConfig = {
   groupName: "BOYNEXTDOOR",
   fandomName: "ONEDOOR",
   // 실제 생일: 2003-09-04. 페이지에서 카운트다운할 "이번 생일" 날짜(연도는 올해로).
+  birthYear: 2003, // 생일 케이크 초 개수 계산용
   birthdayThisYear: "2026-09-04T00:00:00+09:00",
   // Day 3 확정 팔레트 — 성호의 최애 색 '라이트 퍼플' 기반 라벤더 팔레트.
   // (출처: Melon TMI 인터뷰 — 성호: Light Purple)
