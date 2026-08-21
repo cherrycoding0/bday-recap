@@ -55,3 +55,12 @@ body {
   .polaroid { transform: none; }
   .polaroid-img { animation: none; }
 }
+
+/* 실시간 새 메시지 하이라이트 */
+@keyframes rt-glow {
+  0% { box-shadow: 0 0 0 3px var(--artist-primary); background-color: var(--artist-secondary); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.rt-new {
+  animation: rt-glow 2.5s ease-out;
+}

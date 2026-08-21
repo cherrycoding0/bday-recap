@@ -8,6 +8,9 @@ import { getYoutubeThumbnail } from "@/lib/youtube";
 import { validateMessage } from "@/lib/filter";
 import { insertMessage } from "@/lib/messages";
 import { renderCard } from "@/lib/cardImage";
+import { track } from "@/lib/track";
+import { moderateIfNeeded } from "@/lib/moderate";
+import { fetchTypeStats, type TypeStats } from "@/lib/typeStats";
 
 type Step = "intro" | "quiz" | "result" | "card";
 
@@ -26,6 +29,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
   const [busy, setBusy] = useState(false);
   const [cardUrl, setCardUrl] = useState<string | null>(null);
   const [seq, setSeq] = useState<number | null>(null);
+  const [stats, setStats] = useState<TypeStats | null>(null);
 
   const questions = quizConfig.questions;
 
@@ -42,6 +46,8 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
       setPart(pickPart(type));
       setStep("result");
       onCompleted?.();
+      track("quiz_complete", { type: type.id });
+      fetchTypeStats().then(setStats);
     }
   }
 
@@ -71,6 +77,13 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
     setBusy(true);
     setFormError("");
 
+    const verdict = await moderateIfNeeded(content, filter.suspicious);
+    if (!verdict.allow) {
+      setFormError(verdict.reason ?? "메시지를 다듬어주세요.");
+      setBusy(false);
+      return;
+    }
+
     const saved = await insertMessage(nickname, content);
     if (!saved.ok) {
       setFormError(saved.reason);
@@ -78,6 +91,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
       return;
     }
     onMessagePosted?.();
+    track("message_posted", { via: "quiz", type: result.id });
     const mySeq = saved.message.seq ?? null;
     setSeq(mySeq);
 
@@ -99,6 +113,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
   }
 
   function handleShare() {
+    track("share_clicked", { type: result?.id });
     const text = `나는 "${result?.name}" ${artistConfig.fandomName}래 🎂 다음은 너 차례!`;
     const url = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.href;
     if (navigator.share) {
@@ -122,7 +137,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
           </h2>
           <p className="text-sm text-zinc-500">{quizConfig.subtitle}</p>
           <button
-            onClick={() => setStep("quiz")}
+            onClick={() => { track("quiz_start"); setStep("quiz"); }}
             className="rounded-full px-8 py-3 text-sm font-medium text-white transition-colors hover:brightness-95"
             style={{ backgroundColor: "var(--artist-primary)" }}
           >
@@ -197,12 +212,32 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
 
           <p className="text-sm text-zinc-600 max-w-md">{result.description}</p>
 
+          {stats && stats.total >= 30 && (
+            <div className="w-full max-w-md">
+              <p className="text-xs text-zinc-500">
+                {artistConfig.fandomName} <b style={{ color: "var(--artist-primary)" }}>
+                  {Math.round(((stats.byType[result.id] ?? 0) / stats.total) * 100)}%
+                </b>가 같은 유형이에요 ({stats.total.toLocaleString()}명 참여)
+              </p>
+              <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: "var(--artist-secondary)" }}>
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.round(((stats.byType[result.id] ?? 0) / stats.total) * 100)}%`,
+                    backgroundColor: "var(--artist-primary)",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2">
             {part?.fancamUrl && (
               <a
                 href={part.fancamUrl}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => track("fancam_clicked", { song: part.song })}
                 className="rounded-full px-6 py-2.5 text-sm font-medium text-white transition-colors hover:brightness-95"
                 style={{ backgroundColor: "var(--artist-primary)" }}
               >
@@ -275,6 +310,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
             <a
               href={cardUrl}
               download={`${artistConfig.name}-생일카드.png`}
+              onClick={() => track("card_saved", { type: result?.id })}
               className="rounded-full px-5 py-2.5 text-sm font-medium text-white"
               style={{ backgroundColor: "var(--artist-primary)" }}
             >

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase, type Message } from "@/lib/supabase";
 import { validateMessage } from "@/lib/filter";
 import { insertMessage, heartMessage, getHearted, markHearted } from "@/lib/messages";
+import { track } from "@/lib/track";
+import { moderateIfNeeded } from "@/lib/moderate";
 
 type SortMode = "latest" | "hearts";
 
@@ -38,6 +40,27 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
     load();
   }, [load, refreshKey]);
 
+  // 실시간: 다른 팬의 메시지가 새로고침 없이 나타난다 (관리자 삭제도 실시간 반영)
+  const [liveIds, setLiveIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (!supabase) return;
+    const ch = supabase
+      .channel("messages-rt")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+        const m = payload.new as Message;
+        setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [m, ...prev]));
+        setLiveIds((prev) => new Set(prev).add(m.id));
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, (payload) => {
+        const oldId = (payload.old as { id?: string })?.id;
+        if (oldId) setMessages((prev) => prev.filter((x) => x.id !== oldId));
+      })
+      .subscribe();
+    return () => {
+      supabase?.removeChannel(ch);
+    };
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!nickname.trim() || !content.trim()) return;
@@ -50,14 +73,24 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
     }
 
     setStatus("loading");
+
+    // 애매한 표현은 AI 2차 심사 (걸린 것만 — 비용 최소화)
+    const verdict = await moderateIfNeeded(content, filter.suspicious);
+    if (!verdict.allow) {
+      setErrorText(verdict.reason ?? "메시지를 다듬어주세요.");
+      setStatus("error");
+      return;
+    }
+
     const saved = await insertMessage(nickname, content);
     if (!saved.ok) {
       setErrorText(saved.reason);
       setStatus("error");
       return;
     }
-    setMessages((prev) => [saved.message, ...prev]);
+    setMessages((prev) => (prev.some((x) => x.id === saved.message.id) ? prev : [saved.message, ...prev]));
     onMessagePosted?.();
+    track("message_posted", { via: "form" });
     setNickname("");
     setContent("");
     setErrorText("");
@@ -162,7 +195,7 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
         {messages.map((m) => (
           <li
             key={m.id}
-            className="rounded-xl p-4 text-sm shadow-sm"
+            className={`rounded-xl p-4 text-sm shadow-sm ${liveIds.has(m.id) ? "rt-new" : ""}`}
             style={{ backgroundColor: "var(--artist-card)" }}
           >
             {isAdmin && (

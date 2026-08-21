@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { quizConfig } from "@/config/quiz";
 import { artistConfig } from "@/config/artist";
 import { fetchMessageCount } from "@/lib/messages";
+import { supabase } from "@/lib/supabase";
 
 export function GoalMeter({ refreshKey }: { refreshKey: number }) {
   const [count, setCount] = useState<number | null>(null);
@@ -17,9 +18,26 @@ export function GoalMeter({ refreshKey }: { refreshKey: number }) {
 
   useEffect(() => {
     load();
-    const t = setInterval(load, 60_000); // 1분마다 갱신
+    const t = setInterval(load, 5 * 60_000); // 보정용 5분 주기 (실시간이 주 채널)
     return () => clearInterval(t);
   }, [load, refreshKey]);
+
+  // 실시간 증감
+  useEffect(() => {
+    if (!supabase) return;
+    const ch = supabase
+      .channel("goal-rt")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, () =>
+        setCount((c) => (c === null ? c : c + 1))
+      )
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, () =>
+        setCount((c) => (c === null || c === 0 ? c : c - 1))
+      )
+      .subscribe();
+    return () => {
+      supabase?.removeChannel(ch);
+    };
+  }, []);
 
   if (count === null) return null; // 미리보기 모드 등에서는 숨김
 

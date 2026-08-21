@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Countdown } from "@/components/Countdown";
 import { RollingPaper } from "@/components/RollingPaper";
 import { RecapCard } from "@/components/RecapCard";
@@ -11,6 +11,7 @@ import { MessageTicker } from "@/components/MessageTicker";
 import { AdminLogin } from "@/components/AdminLogin";
 import { PhotoHeart } from "@/components/PhotoHeart";
 import { useAdmin } from "@/lib/useAdmin";
+import { track } from "@/lib/track";
 import { artistConfig } from "@/config/artist";
 
 export default function Home() {
@@ -18,6 +19,10 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
   const bump = () => setRefreshKey((k) => k + 1);
   const admin = useAdmin();
+
+  useEffect(() => {
+    track("visit", undefined, true);
+  }, []);
 
   // 유형 테스트 결과 화면에 있는 동안만 메시지 폼이 열린다.
   // 테스트를 다시 시작하면 폼도 다시 닫힘 (새로고침해도 처음부터).

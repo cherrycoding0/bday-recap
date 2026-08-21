@@ -47,7 +47,16 @@ const REPEAT_PATTERN = /(.)\1{7,}/;
 // 전화번호/연락처 유도
 const CONTACT_PATTERN = /(01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}|카톡|카카오톡\s*아이디|오픈\s*채팅|텔레그램)/i;
 
-export type FilterResult = { ok: true } | { ok: false; reason: string };
+export type FilterResult =
+  | { ok: true; suspicious?: boolean } // suspicious: LLM 2차 심사 권장
+  | { ok: false; reason: string };
+
+// 오탐 위험 때문에 무조건 차단은 못 하지만, 맥락 심사가 필요한 표현들.
+// (아래 '일부러 뺀 것' 목록과 짝을 이룸 — 여기 걸리면 AI가 맥락을 판정)
+const SUSPICIOUS_WORDS = [
+  "미친", "죽여", "쓰레기", "꺼져라", "역겹", "토나", "극혐",
+  "hate", "ugly", "disgusting", "gross",
+];
 
 // 메시지 최소 길이 (공백 제외 아님 — trim 후 전체 글자 수 기준)
 const MIN_CONTENT_LENGTH = 10;
@@ -93,6 +102,14 @@ export function validateMessage(nickname: string, content: string): FilterResult
       if (normalized.includes(word)) {
         return { ok: false, reason: "축하 페이지에 어울리지 않는 표현이 있어요. 문구를 다듬어주세요." };
       }
+    }
+  }
+
+  // 통과했지만 맥락 심사가 필요한 표현이 있으면 표시 (AI 2차 심사 대상)
+  const normalizedContent = normalize(content);
+  for (const word of SUSPICIOUS_WORDS) {
+    if (normalizedContent.includes(normalize(word))) {
+      return { ok: true, suspicious: true };
     }
   }
 
