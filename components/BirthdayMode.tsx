@@ -57,7 +57,7 @@ export function BirthdayMode() {
       artistConfig.themeColor.primary,
       artistConfig.themeColor.accent,
       "#FFFFFF",
-      "#C8BEFF",
+      "#FFC0D9", // 연핑크 컨페티
     ];
 
     type P = { x: number; y: number; vx: number; vy: number; r: number; c: string; rot: number; vr: number; burst?: boolean; life?: number };
@@ -155,7 +155,7 @@ export function BirthdayMode() {
           🎂 {artistConfig.name}, 생일 축하해!
         </p>
         <p className="mt-2 text-sm text-white/85">
-          {artistConfig.fandomName}의 마음이 오늘 하루 종일 도착하고 있어요 💜
+          {artistConfig.fandomName}의 마음이 오늘 하루 종일 도착하고 있어요 💖
         </p>
 
         {/* 초 불기 게임 */}
@@ -187,7 +187,7 @@ export function BirthdayMode() {
                 {total}개의 초를 다 껐어요!
               </p>
               <p className="mt-1 text-xs text-white/90">
-                소원은 {artistConfig.name}에게 닿을 거예요 💜
+                소원은 {artistConfig.name}에게 닿을 거예요 💖
               </p>
             </>
           )}

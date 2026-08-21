@@ -64,7 +64,7 @@ export function GoalMeter({ refreshKey }: { refreshKey: number }) {
         />
       </div>
       <p className="mt-1.5 text-right text-xs text-zinc-400">
-        {done ? `${artistConfig.fandomName}의 마음이 목표를 넘었어요 💜` : `${pct}%`}
+        {done ? `${artistConfig.fandomName}의 마음이 목표를 넘었어요 💖` : `${pct}%`}
       </p>
     </div>
   );

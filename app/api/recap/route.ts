@@ -53,8 +53,8 @@ function fallbackRecap(messages: { nickname: string; content: string }[]): Recap
     .slice(0, 3)
     .map((m) => `${m.content.slice(0, 60)} — ${m.nickname}`);
   return {
-    headline: `${artistConfig.name}에게 도착한 마음 💌`,
-    summary: `${messages.length}명의 ${artistConfig.fandomName}가 축하 메시지를 남겼어요. 한 글자 한 글자에 담긴 마음을 모아 전합니다.`,
+    headline: `${artistConfig.name} 앞으로 도착한 마음 💌`,
+    summary: `${messages.length}명의 ${artistConfig.fandomName}가 마음을 남겼어요. 한 줄 한 줄이 전부 진심이에요.`,
     highlights,
     messageCount: messages.length,
     aiGenerated: false,

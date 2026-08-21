@@ -17,12 +17,12 @@ function rateLimited(ip: string): boolean {
 }
 
 const FALLBACK: Record<string, string> = {
-  "저세상 텐션 올콘형": "이 텐션, 성호도 분명 느끼고 있을 거예요!",
-  "앞자리 눈맞춤 승부사형": "그 진심, 언젠가 꼭 눈맞춤으로 돌아올 거예요.",
-  "단톡방 전파왕형": "당신 덕분에 오늘도 성호의 소식이 널리 퍼져요.",
-  "홈파티 집순이형": "아늑한 마음으로 보내는 축하가 제일 오래 남아요.",
-  "숨스밍 눈물샘형": "조용한 마음이 가장 깊게 닿는 법이에요.",
-  "현생도 덕질도 프로형": "꾸준한 마음이야말로 최고의 선물이에요.",
+  "저세상 텐션 올콘형": "이 텐션 성호한테도 분명 전해졌을 듯!",
+  "앞자리 눈맞춤 승부사형": "이 진심이면 눈맞춤은 시간문제잖아.",
+  "단톡방 전파왕형": "오늘도 성호 소식은 당신 덕에 퍼집니다.",
+  "홈파티 집순이형": "포근한 축하가 제일 오래 남는 법.",
+  "숨스밍 눈물샘형": "조용한 진심이 제일 깊게 닿아요.",
+  "현생도 덕질도 프로형": "꾸준함이 최고의 선물인 거, 알죠?",
 };
 
 export async function POST(request: Request) {
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "필수 값 누락" }, { status: 400 });
   }
 
-  const fallback = FALLBACK[typeName] ?? "당신의 마음이 카드에 담겼어요.";
+  const fallback = FALLBACK[typeName] ?? "이 마음, 카드에 고이 담았어요.";
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   if (rateLimited(ip)) {

@@ -68,7 +68,7 @@ export async function renderCard(opts: {
 
   // 컨페티
   const seeds = [7, 13, 29, 41, 53, 67, 83, 97, 113, 131, 149, 167, 181, 199, 223, 241];
-  const confColors = [c.accent, "#FFFFFF", "#C8BEFF", "#FFD6A5"];
+  const confColors = [c.accent, "#FFFFFF", "#FFC0D9", "#FFE3A3"];
   seeds.forEach((s, i) => {
     const x = ((s * 97) % W);
     const y = ((s * 173) % H);

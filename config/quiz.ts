@@ -84,7 +84,7 @@ export const quizConfig = {
       id: "allcon",
       name: "저세상 텐션 올콘형", // ✏️
       emoji: "🔥",
-      description: "성호의 행복이 곧 나의 행복. 현장에 있어야 직성이 풀리고, 그 에너지를 다같이 나눠야 완성되는 타입.",
+      description: "현장이 답이다. 소리 지를 수 있는 곳이면 어디든 가고, 이 텐션은 나눠야 두 배가 되는 타입.",
       partHint: "시원하게 지르는 고음 · 하이라이트 파트",
       parts: [{ song: "ADIOS!", lyricLine: "좋아 날뛰고픈 밤", fancamUrl: "https://youtu.be/W2pVVwfniMY"}],
     },
@@ -92,7 +92,7 @@ export const quizConfig = {
       id: "frontrow",
       name: "앞자리 눈맞춤 승부사형", // ✏️
       emoji: "🎯",
-      description: "덕질은 진심 승부. 목표가 생기면 직진하고, 성호와의 눈맞춤 한 번을 위해 모든 걸 겁니다.",
+      description: "티켓팅도 눈맞춤도 전부 실전. 목표가 생기면 뒤도 안 돌아보고 직진하는 타입.",
       partHint: "킬링파트 · 직진 가사 파트",
       parts: [
   { song: "Viral", lyricLine: "널 붙잡으러 갈거야", fancamUrl: "https://youtu.be/GrdHtesFQig"},
@@ -103,7 +103,7 @@ export const quizConfig = {
       id: "spreader",
       name: "단톡방 전파왕형", // ✏️
       emoji: "📢",
-      description: "좋은 건 나눠야 제맛. 성호의 모든 순간을 실시간으로 퍼 나르는, 팬덤의 소문난 마당발.",
+      description: "좋은 건 못 참지. 성호의 모든 순간을 단톡방에 퍼 나르는 비공식 홍보대사.",
       partHint: "다같이 떼창하는 후렴 파트",
       parts: [{ song: "Hollywood Action", lyricLine: "I'm him 네가 아는 걔", fancamUrl: "https://youtu.be/sqPLHubw47g" }],
     },
@@ -111,7 +111,7 @@ export const quizConfig = {
       id: "homebody",
       name: "홈파티 집순이형", // ✏️
       emoji: "🏠",
-      description: "덕질은 아늑하게. 내 방이 최고의 콘서트장. 좋아하는 마음의 깊이는 누구에게도 지지 않아요.",
+      description: "내 방이 곧 콘서트장. 이불 속에서 조용히, 근데 누구보다 진심으로 파는 타입.",
       partHint: "편안하고 다정한 벌스 파트",
       parts: [
         { song: "Nice Guy", lyricLine: "Look at my eyes Look at my line", fancamUrl: "https://youtu.be/UZNPMOPDaes" },
@@ -121,7 +121,7 @@ export const quizConfig = {
       id: "quiettears",
       name: "숨스밍 눈물샘형", // ✏️
       emoji: "🌙",
-      description: "조용히, 그러나 누구보다 깊게. 스밍 기록이 곧 내 마음의 기록. 가사 한 줄에 밤새 울 수 있는 타입.",
+      description: "스밍 기록이 곧 내 마음. 가사 한 줄에 새벽 두 시 감성 터지는 타입.",
       partHint: "잔잔한 발라드 · 브릿지 파트",
       parts: [{ song: "123-78", lyricLine: "비가 주르륵 내린 다음", fancamUrl: "https://youtu.be/ZOcjNJz-hXo" }],
     },
@@ -129,7 +129,7 @@ export const quizConfig = {
       id: "propro",
       name: "현생도 덕질도 프로형", // ✏️
       emoji: "⚖️",
-      description: "일할 땐 일하고 덕질할 땐 확실하게. 균형 잡힌 덕질의 정석. 오래, 꾸준히, 단단하게 좋아합니다.",
+      description: "현생도 덕질도 둘 다 잡는다. 조용히 오래가는 찐팬이 바로 나.",
       partHint: "안정감 있는 도입 · 마무리 파트",
       parts: [{ song: "오늘만 I LOVE YOU", lyricLine: "그날 이후로 난 이렇게 살아", fancamUrl: "https://youtu.be/N8XBTlOiQCc" }],
     },

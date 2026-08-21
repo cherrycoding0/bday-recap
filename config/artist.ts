@@ -14,12 +14,12 @@ export const artistConfig = {
   // Day 3 확정 팔레트 — 성호의 최애 색 '라이트 퍼플' 기반 라벤더 팔레트.
   // (출처: Melon TMI 인터뷰 — 성호: Light Purple)
   themeColor: {
-    primary: "#7B68E8", // 라벤더 — 버튼, 포인트 텍스트
-    primaryDeep: "#5747B8", // 진한 라벤더 — 호버, 강조
-    secondary: "#F4F1FF", // 아주 연한 라벤더 — 페이지 배경
+    primary: "#FF6FA5", // 핑크 — 버튼, 포인트 텍스트
+    primaryDeep: "#E44C8C", // 진한 핑크 — 호버, 강조
+    secondary: "#FFEFF5", // 아주 연한 핑크 — 페이지 배경
     card: "#FFFFFF", // 카드/타일 배경 (배경 위에서 분리되도록 흰색)
-    accent: "#FFB86B", // 살구빛 포인트 — 생일 케이크/컨페티 느낌
-    text: "#2A2350", // 본문 텍스트 — 남보라 톤 다크
+    accent: "#FFC55C", // 골드옐로 포인트 — 핑크와 어울리는 케이크/컨페티 색
+    text: "#47202F", // 본문 텍스트 — 딥 로즈 다크
   },
   // 비공식 팬 프로젝트 고지문 — 문구는 자유롭게 다듬어도 되지만 반드시 남겨둘 것
   disclaimer:

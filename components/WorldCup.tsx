@@ -12,7 +12,7 @@ import { track } from "@/lib/track";
 type Step = "intro" | "play" | "result";
 type Rank = { photo: string; wins: number };
 
-const ROUND_NAMES: Record<number, string> = { 16: "16강", 8: "8강", 4: "준결승", 2: "결승" };
+const ROUND_NAMES: Record<number, string> = { 32: "32강", 16: "16강", 8: "8강", 4: "준결승", 2: "결승" };
 const MIN_GAMES_FOR_RANKS = 10; // 이 판수 이상 쌓여야 명예의 전당 표시
 
 function shuffle<T>(arr: T[]): T[] {
@@ -29,17 +29,19 @@ function small(url: string): string {
   return url.replace("name=large", "name=small");
 }
 
-export function WorldCup() {
+export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void; onRestart?: () => void }) {
   const [step, setStep] = useState<Step>("intro");
   const [pool, setPool] = useState<string[]>([]); // 현재 라운드 대기열
   const [nextRound, setNextRound] = useState<string[]>([]); // 승자들
-  const [roundSize, setRoundSize] = useState(16);
+  const [roundSize, setRoundSize] = useState(32);
   const [matchIdx, setMatchIdx] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [ranks, setRanks] = useState<Rank[] | null>(null);
   const [totalGames, setTotalGames] = useState(0);
   const [copied, setCopied] = useState(false);
 
+  const CUP_SIZE = 32; // 토너먼트 규모 (사진이 이보다 적으면 자동으로 16강)
+  const size = photoConfig.photos.length >= CUP_SIZE ? CUP_SIZE : 16;
   const canPlay = photoConfig.photos.length >= 16;
 
   // 명예의 전당 로드
@@ -55,10 +57,11 @@ export function WorldCup() {
   }, [step === "result"]); // 결과가 나오면 갱신
 
   function start() {
-    const picked = shuffle(photoConfig.photos).slice(0, 16);
+    if (step === "result") onRestart?.(); // 결과에서 다시 하기 → 완주 전까지 게이트 닫힘
+    const picked = shuffle(photoConfig.photos).slice(0, size);
     setPool(picked);
     setNextRound([]);
-    setRoundSize(16);
+    setRoundSize(size);
     setMatchIdx(0);
     setWinner(null);
     setStep("play");
@@ -76,6 +79,7 @@ export function WorldCup() {
       if (winners.length === 1) {
         setWinner(winners[0]);
         setStep("result");
+        onCompleted?.();
         track("worldcup_complete", { winner: winners[0] });
         return;
       }
@@ -166,13 +170,13 @@ export function WorldCup() {
           <h2 className="font-display text-2xl sm:text-3xl" style={{ color: "var(--artist-text)" }}>
             {artistConfig.name} 사진드컵 🏆
           </h2>
-          <p className="text-sm text-zinc-500">둘 중 하나만 고를 수 있다면? 16강 토너먼트로 내 원픽 찾기</p>
+          <p className="text-sm text-zinc-500">둘 중 하나만 골라야 한다면? {size}강 토너먼트로 내 원픽 찾기</p>
           <button
             onClick={start}
             className="rounded-full px-8 py-3 text-sm font-medium text-white transition-colors hover:brightness-95"
             style={{ backgroundColor: "var(--artist-primary)" }}
           >
-            16강 시작하기 🔥
+            {size}강 시작하기 🔥
           </button>
 
           {ranks && ranks.length >= 3 && totalGames >= MIN_GAMES_FOR_RANKS && (

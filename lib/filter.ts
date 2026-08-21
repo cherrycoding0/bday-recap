@@ -75,7 +75,7 @@ export function validateMessage(nickname: string, content: string): FilterResult
   }
   const meaningful = (trimmed.match(/[가-힣a-zA-Z0-9]/g) ?? []).length;
   if (meaningful < MIN_MEANINGFUL_CHARS) {
-    return { ok: false, reason: "자음이나 기호만으로는 등록할 수 없어요. 문장으로 축하해주세요 💜" };
+    return { ok: false, reason: "자음이나 기호만으로는 등록할 수 없어요. 문장으로 축하해주세요 💖" };
   }
 
   const fields: Array<[string, string]> = [

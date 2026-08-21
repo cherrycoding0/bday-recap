@@ -153,7 +153,7 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
               <div
                 key={i}
                 className="h-1.5 flex-1 rounded-full transition-colors"
-                style={{ backgroundColor: i <= qIndex ? "var(--artist-primary)" : "#E8E4F5" }}
+                style={{ backgroundColor: i <= qIndex ? "var(--artist-primary)" : "var(--artist-secondary)" }}
               />
             ))}
           </div>

@@ -69,12 +69,12 @@ export function PhotoHeart() {
       </div>
       {/* 캡션 */}
       <p className="mt-2.5 text-center text-sm" style={{ color: "var(--artist-text)" }}>
-        {artistConfig.name}야 생일 축하해💜
+        {artistConfig.name}야 생일 축하해💖
       </p>
       <p className="mt-0.5 text-center text-[10px] text-zinc-300">탭하면 다음 사진 →</p>
       {/* 모서리 하트 스티커 */}
       <span className="absolute -right-2.5 -top-2.5 rotate-12 text-2xl drop-shadow-sm" aria-hidden>
-        💜
+        💖
       </span>
     </button>
   );
