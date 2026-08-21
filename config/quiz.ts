@@ -34,7 +34,13 @@ export type FanType = {
 export const quizConfig = {
   title: "나의 오프 성격 유형은?", // ✏️
   subtitle: "나에게 어울리는 성호 파트 찾기",
-  goalCount: 904, // ✏️ 생일까지 모을 메시지 목표 (9월 4일 → 904)
+  goalCount: 904, // ✏️ 1차 목표 (9월 4일 → 904)
+  // 목표 사다리 — 앞 목표를 달성하면 자동으로 다음 목표가 열립니다 (연장전).
+  goalSteps: [
+    { count: 904, label: "9월 4일" },
+    { count: 1004, label: "천사 성호" },
+    { count: 2026, label: "2026 최종 목표" },
+  ],
 
   questions: [
     {

@@ -9,7 +9,8 @@ import { artistConfig } from "@/config/artist";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/track";
 import { validateMessage } from "@/lib/filter";
-import { insertMessage } from "@/lib/messages";
+import { insertMessage, fetchMessageCount } from "@/lib/messages";
+import { quizConfig } from "@/config/quiz";
 import { moderateIfNeeded } from "@/lib/moderate";
 
 type Step = "intro" | "play" | "result";
@@ -48,11 +49,16 @@ export function WorldCup({ onMessagePosted }: { onMessagePosted?: () => void }) 
   const [postedSeq, setPostedSeq] = useState<number | null>(null);
   const [posted, setPosted] = useState(false);
   const [totalGames, setTotalGames] = useState(0);
+  const [msgCount, setMsgCount] = useState(0);
   const [copied, setCopied] = useState(false);
 
   const CUP_SIZE = 32; // 토너먼트 규모 (사진이 이보다 적으면 자동으로 16강)
   const size = photoConfig.photos.length >= CUP_SIZE ? CUP_SIZE : 16;
   const canPlay = photoConfig.photos.length >= 16;
+
+  useEffect(() => {
+    fetchMessageCount().then((c) => { if (c !== null) setMsgCount(c); });
+  }, [step]);
 
   // 명예의 전당 로드
   useEffect(() => {
@@ -171,27 +177,37 @@ export function WorldCup({ onMessagePosted }: { onMessagePosted?: () => void }) 
             {size}강 시작하기 🔥
           </button>
 
-          {ranks && ranks.length >= 3 && totalGames >= MIN_GAMES_FOR_RANKS && (
-            <div className="mt-2 w-full">
-              <p className="mb-2 text-xs font-semibold" style={{ color: "var(--artist-primary)" }}>
-                👑 명예의 전당 — {artistConfig.fandomName}가 가장 많이 고른 원픽
-              </p>
-              <div className="flex justify-center gap-3">
-                {ranks.slice(0, 3).map((r, i) => (
-                  <div key={r.photo} className="relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={small(r.photo)} alt={`${i + 1}위`} className="h-24 w-20 rounded-lg object-cover shadow-sm" />
-                    <span className="absolute -left-1.5 -top-1.5 rounded-full bg-white px-1.5 text-sm shadow">
-                      {["🥇", "🥈", "🥉"][i]}
-                    </span>
-                    <span className="absolute bottom-1 right-1 rounded bg-black/50 px-1 text-[10px] text-white">
-                      {r.wins}승
-                    </span>
-                  </div>
-                ))}
+          {ranks && ranks.length >= 3 && totalGames >= MIN_GAMES_FOR_RANKS && (() => {
+            const firstGoal = quizConfig.goalCount;
+            const unlocked = msgCount >= firstGoal; // 904 달성 시 TOP 10 공개
+            const shown = ranks.slice(0, unlocked ? 10 : 3);
+            return (
+              <div className="mt-2 w-full">
+                <p className="mb-2 text-xs font-semibold" style={{ color: "var(--artist-primary)" }}>
+                  👑 명예의 전당 — {artistConfig.fandomName}가 가장 많이 고른 원픽 {unlocked && "TOP 10"}
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {shown.map((r, i) => (
+                    <div key={r.photo} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={small(r.photo)} alt={`${i + 1}위`} className="h-24 w-20 rounded-lg object-cover shadow-sm" />
+                      <span className="absolute -left-1.5 -top-1.5 rounded-full bg-white px-1.5 text-sm shadow">
+                        {["🥇", "🥈", "🥉"][i] ?? `${i + 1}위`}
+                      </span>
+                      <span className="absolute bottom-1 right-1 rounded bg-black/50 px-1 text-[10px] text-white">
+                        {r.wins}승
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {!unlocked && (
+                  <p className="mt-2 text-center text-xs text-zinc-400">
+                    🔒 축하 메시지 {firstGoal.toLocaleString()}개가 모이면 <b style={{ color: "var(--artist-primary)" }}>TOP 10</b>이 공개돼요!
+                  </p>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       )}
 
