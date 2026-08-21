@@ -137,20 +137,20 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
         className="flex flex-col gap-3 rounded-2xl p-4 sm:p-5 shadow-sm"
         style={{ backgroundColor: "var(--artist-card)" }}
       >
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             maxLength={20}
             placeholder="닉네임"
-            className="w-28 sm:w-36 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
+            className="w-full sm:w-36 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
           />
           <input
             value={content}
             onChange={(e) => setContent(e.target.value)}
             maxLength={300}
             placeholder="축하 메시지를 남겨주세요"
-            className="flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
+            className="w-full min-w-0 sm:flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
           />
         </div>
         <button
