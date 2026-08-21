@@ -22,6 +22,9 @@ export type FanType = {
   emoji: string;
   description: string; // 결과 화면 설명 2~3줄
   partHint: string;    // 파트 성격 (파트 미정일 때 보여줄 문구)
+  traits: string[];    // ✏️ 저격형 특징 3줄 — "어떻게 알았지?!"가 나와야 스샷 찍힘
+  matchType: string;   // ✏️ 찰떡궁합 유형 id
+  clashType: string;   // ✏️ 티격태격 유형 id
   // ✏️ 유형당 파트 2~3개 — 결과가 나올 때마다 랜덤으로 하나 선택됩니다.
   // 파트가 2개 이상이면 "다른 파트도 보기 🔀" 버튼이 자동으로 생겨요.
   // 예: parts: [
@@ -32,7 +35,7 @@ export type FanType = {
 };
 
 export const quizConfig = {
-  title: "나의 오프 성격 유형은?", // ✏️
+  title: "성호 파트 찾기", // ✏️
   subtitle: "나에게 어울리는 성호 파트 찾기",
   goalCount: 904, // ✏️ 1차 목표 (9월 4일 → 904)
   // 목표 사다리 — 앞 목표를 달성하면 자동으로 다음 목표가 열립니다 (연장전).
@@ -92,6 +95,13 @@ export const quizConfig = {
       emoji: "🔥",
       description: "현장이 답이다. 소리 지를 수 있는 곳이면 어디든 가고, 이 텐션은 나눠야 두 배가 되는 타입.",
       partHint: "시원하게 지르는 고음 · 하이라이트 파트",
+      traits: [ // ✏️
+        "콘서트 끝나면 현타 오기 전에 다음 티켓팅부터 알아봄",
+        "응원봉 여분 배터리까지 챙기는 프로 준비러",
+        "목이 쉬어도 후회는 없다, 그게 올콘의 낭만",
+      ],
+      matchType: "spreader",
+      clashType: "quiettears",
       parts: [{ song: "ADIOS!", lyricLine: "좋아 날뛰고픈 밤", fancamUrl: "https://youtu.be/W2pVVwfniMY"}],
     },
     {
@@ -100,6 +110,13 @@ export const quizConfig = {
       emoji: "🎯",
       description: "티켓팅도 눈맞춤도 전부 실전. 목표가 생기면 뒤도 안 돌아보고 직진하는 타입.",
       partHint: "킬링파트 · 직진 가사 파트",
+      traits: [ // ✏️
+        "티켓팅 오픈 10초 전부터 심장이 뛰기 시작함",
+        "눈맞춤 한 번이면 한 달을 버틸 수 있음",
+        "포기라는 단어는 내 사전에 없음",
+      ],
+      matchType: "allcon",
+      clashType: "homebody",
       parts: [
   { song: "Viral", lyricLine: "널 붙잡으러 갈거야", fancamUrl: "https://youtu.be/GrdHtesFQig"},
   { song: "Nice Guy", lyricLine: "Look at my eyes", fancamUrl: "https://youtu.be/UZNPMOPDaes" },
@@ -111,6 +128,13 @@ export const quizConfig = {
       emoji: "📢",
       description: "좋은 건 못 참지. 성호의 모든 순간을 단톡방에 퍼 나르는 비공식 홍보대사.",
       partHint: "다같이 떼창하는 후렴 파트",
+      traits: [ // ✏️
+        "성호 떴다 하면 단톡방 3개에 동시 전송",
+        "친구를 입덕시켜야 직성이 풀림",
+        "내 리트윗이 곧 홍보다",
+      ],
+      matchType: "homebody",
+      clashType: "frontrow",
       parts: [{ song: "Hollywood Action", lyricLine: "I'm him 네가 아는 걔", fancamUrl: "https://youtu.be/sqPLHubw47g" }],
     },
     {
@@ -119,6 +143,13 @@ export const quizConfig = {
       emoji: "🏠",
       description: "내 방이 곧 콘서트장. 이불 속에서 조용히, 근데 누구보다 진심으로 파는 타입.",
       partHint: "편안하고 다정한 벌스 파트",
+      traits: [ // ✏️
+        "콘서트 가고 싶은데 나가기는 싫음",
+        "이불 속에서 직캠 보다가 새벽 3시",
+        "근데 스밍 순위는 내가 1등",
+      ],
+      matchType: "spreader",
+      clashType: "allcon",
       parts: [
         { song: "Nice Guy", lyricLine: "Look at my eyes Look at my line", fancamUrl: "https://youtu.be/UZNPMOPDaes" },
       ],
@@ -129,6 +160,13 @@ export const quizConfig = {
       emoji: "🌙",
       description: "스밍 기록이 곧 내 마음. 가사 한 줄에 새벽 두 시 감성 터지는 타입.",
       partHint: "잔잔한 발라드 · 브릿지 파트",
+      traits: [ // ✏️
+        "가사 한 줄에 새벽 감성 폭발",
+        "말없이 스밍 돌리는 조용한 실세",
+        "울면서도 반복재생 버튼 누르는 중",
+      ],
+      matchType: "propro",
+      clashType: "allcon",
       parts: [{ song: "123-78", lyricLine: "비가 주르륵 내린 다음", fancamUrl: "https://youtu.be/ZOcjNJz-hXo" }],
     },
     {
@@ -137,6 +175,13 @@ export const quizConfig = {
       emoji: "⚖️",
       description: "현생도 덕질도 둘 다 잡는다. 조용히 오래가는 찐팬이 바로 나.",
       partHint: "안정감 있는 도입 · 마무리 파트",
+      traits: [ // ✏️
+        "출근길엔 스밍, 퇴근길엔 직캠",
+        "덕질 지출도 계획적으로 관리하는 타입",
+        "조용히 오래가는 게 진짜라는 걸 앎",
+      ],
+      matchType: "quiettears",
+      clashType: "frontrow",
       parts: [{ song: "오늘만 I LOVE YOU", lyricLine: "그날 이후로 난 이렇게 살아", fancamUrl: "https://youtu.be/N8XBTlOiQCc" }],
     },
   ] as FanType[],

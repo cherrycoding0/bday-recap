@@ -39,7 +39,7 @@ export default function Home() {
             className="text-sm font-semibold mb-2 tracking-wide"
             style={{ color: "var(--artist-primary)" }}
           >
-            {artistConfig.groupName} · {artistConfig.fandomName}
+            {artistConfig.groupName} · {artistConfig.engName}
           </p>
           <h1
             className="font-display text-4xl sm:text-5xl"

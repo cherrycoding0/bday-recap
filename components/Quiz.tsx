@@ -135,6 +135,9 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
           <h2 className="font-display text-2xl sm:text-3xl" style={{ color: "var(--artist-text)" }}>
             {quizConfig.title}
           </h2>
+          <p className="text-sm" style={{ color: "var(--artist-primary)" }}>
+            {(quizConfig as { storyLine?: string }).storyLine}
+          </p>
           <p className="text-sm text-zinc-500">{quizConfig.subtitle}</p>
           <button
             onClick={() => { track("quiz_start"); setStep("quiz"); }}
@@ -211,6 +214,42 @@ export function Quiz({ onMessagePosted, onCompleted, onRestart }: { onMessagePos
           </div>
 
           <p className="text-sm text-zinc-600 max-w-md">{result.description}</p>
+
+          {result.traits?.length > 0 && (
+            <ul className="w-full max-w-md space-y-1.5 rounded-2xl p-4 text-left text-sm" style={{ backgroundColor: "var(--artist-secondary)" }}>
+              {result.traits.map((t) => (
+                <li key={t} className="flex gap-2">
+                  <span style={{ color: "var(--artist-primary)" }}>✔</span>
+                  <span style={{ color: "var(--artist-text)" }}>{t}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {(() => {
+            const match = quizConfig.types.find((t) => t.id === result.matchType);
+            const clash = quizConfig.types.find((t) => t.id === result.clashType);
+            if (!match && !clash) return null;
+            return (
+              <div className="w-full max-w-md">
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  {match && (
+                    <div className="flex-1 rounded-xl border px-3 py-2.5 text-sm" style={{ borderColor: "var(--artist-primary)" }}>
+                      <span className="text-xs text-zinc-400">💖 찰떡궁합</span>
+                      <p className="font-medium" style={{ color: "var(--artist-text)" }}>{match.emoji} {match.name}</p>
+                    </div>
+                  )}
+                  {clash && (
+                    <div className="flex-1 rounded-xl border border-zinc-200 px-3 py-2.5 text-sm">
+                      <span className="text-xs text-zinc-400">⚡ 티격태격</span>
+                      <p className="font-medium" style={{ color: "var(--artist-text)" }}>{clash.emoji} {clash.name}</p>
+                    </div>
+                  )}
+                </div>
+                <p className="mt-1.5 text-center text-xs text-zinc-400">친구 결과랑 비교해보세요!</p>
+              </div>
+            );
+          })()}
 
           {stats && stats.total >= 30 && (
             <div className="w-full max-w-md">
