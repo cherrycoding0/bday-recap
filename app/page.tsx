@@ -71,7 +71,18 @@ export default function Home() {
       </main>
 
       <footer className="mt-12 flex max-w-md flex-col items-center gap-3 text-center text-xs text-zinc-400">
-        <p>{artistConfig.disclaimer}</p>
+        <p>
+          문의{" "}
+          <a
+            href="https://x.com/slfksldf00"
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+            style={{ color: "var(--artist-primary)" }}
+          >
+            @slfksldf00
+          </a>
+        </p>
         <AdminLogin admin={admin} />
       </footer>
       </div>
