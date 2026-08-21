@@ -25,10 +25,6 @@ export default function Home() {
     track("visit", undefined, true);
   }, []);
 
-  // 사진드컵 또는 유형 테스트를 완주해야 메시지 폼이 열린다.
-  // 다시 시작하면 해당 콘텐츠의 완주 상태는 닫힘 (다른 쪽이 완주면 폼 유지).
-  const [quizDone, setQuizDone] = useState(false);
-  const [cupDone, setCupDone] = useState(false);
 
   return (
     <div
@@ -59,16 +55,15 @@ export default function Home() {
 
         <PhotoHeart />
 
-        <WorldCup onCompleted={() => setCupDone(true)} onRestart={() => setCupDone(false)} />
+        <WorldCup onMessagePosted={bump} />
 
-        <Quiz onMessagePosted={bump} onCompleted={() => setQuizDone(true)} onRestart={() => setQuizDone(false)} />
+        <Quiz onMessagePosted={bump} />
 
         <RollingPaper
           onMessagePosted={bump}
           refreshKey={refreshKey}
           isAdmin={admin.isAdmin}
           onDelete={admin.deleteMessage}
-          showForm={quizDone || cupDone}
           meter={<GoalMeter refreshKey={refreshKey} />}
         />
 

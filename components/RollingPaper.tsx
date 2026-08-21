@@ -2,10 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabase, type Message } from "@/lib/supabase";
-import { validateMessage } from "@/lib/filter";
-import { insertMessage, heartMessage, getHearted, markHearted } from "@/lib/messages";
-import { track } from "@/lib/track";
-import { moderateIfNeeded } from "@/lib/moderate";
+import { heartMessage, getHearted, markHearted } from "@/lib/messages";
 
 type SortMode = "latest" | "hearts";
 
@@ -14,13 +11,9 @@ type AdminProps = {
   onDelete?: (id: string) => Promise<boolean>;
 };
 
-export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, showForm = true, meter }: { onMessagePosted?: () => void; refreshKey?: number; showForm?: boolean; meter?: React.ReactNode } & AdminProps) {
+export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, meter }: { onMessagePosted?: () => void; refreshKey?: number; meter?: React.ReactNode } & AdminProps) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [nickname, setNickname] = useState("");
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [errorText, setErrorText] = useState("");
   const [sort, setSort] = useState<SortMode>("latest");
   const [hearted, setHearted] = useState<Set<string>>(new Set());
   const usingSupabase = Boolean(supabase);
@@ -61,42 +54,6 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
     };
   }, []);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!nickname.trim() || !content.trim()) return;
-
-    const filter = validateMessage(nickname, content);
-    if (!filter.ok) {
-      setErrorText(filter.reason);
-      setStatus("error");
-      return;
-    }
-
-    setStatus("loading");
-
-    // 애매한 표현은 AI 2차 심사 (걸린 것만 — 비용 최소화)
-    const verdict = await moderateIfNeeded(content, filter.suspicious);
-    if (!verdict.allow) {
-      setErrorText(verdict.reason ?? "메시지를 다듬어주세요.");
-      setStatus("error");
-      return;
-    }
-
-    const saved = await insertMessage(nickname, content);
-    if (!saved.ok) {
-      setErrorText(saved.reason);
-      setStatus("error");
-      return;
-    }
-    setMessages((prev) => (prev.some((x) => x.id === saved.message.id) ? prev : [saved.message, ...prev]));
-    onMessagePosted?.();
-    track("message_posted", { via: "form" });
-    setNickname("");
-    setContent("");
-    setErrorText("");
-    setStatus("idle");
-  }
-
   async function handleDelete(m: Message) {
     if (!onDelete) return;
     if (confirmingId !== m.id) {
@@ -123,51 +80,7 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
 
   return (
     <div className="w-full max-w-2xl">
-      {!showForm && (
-        <p className="text-center text-xs text-zinc-400">
-          💌 위의 <b style={{ color: "var(--artist-primary)" }}>사진드컵</b>이나 <b style={{ color: "var(--artist-primary)" }}>유형 테스트</b>를 마치면 축하 메시지를 남길 수 있어요
-        </p>
-      )}
-      {showForm && (
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-3 rounded-2xl p-4 sm:p-5 shadow-sm"
-        style={{ backgroundColor: "var(--artist-card)" }}
-      >
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <input
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            maxLength={20}
-            placeholder="닉네임"
-            className="w-full sm:w-36 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
-          />
-          <input
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            maxLength={300}
-            placeholder="축하 메시지를 남겨주세요"
-            className="w-full min-w-0 sm:flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="self-end rounded-full px-5 py-2 text-sm font-medium text-white disabled:opacity-50 transition-colors hover:brightness-95"
-          style={{ backgroundColor: "var(--artist-primary)" }}
-        >
-          {status === "loading" ? "남기는 중..." : "메시지 남기기"}
-        </button>
-        {status === "error" && <p className="text-xs text-red-500">{errorText}</p>}
-        {!usingSupabase && (
-          <p className="text-xs text-zinc-400">
-            (지금은 미리보기 모드예요 — Supabase 키를 연결하면 실제로 저장됩니다)
-          </p>
-        )}
-      </form>
-      )}
-
-      {meter && <div className="mt-4">{meter}</div>}
+      {meter && <div>{meter}</div>}
 
       {usingSupabase && messages.length > 0 && (
         <div className="mt-5 flex gap-1.5">

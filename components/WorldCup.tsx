@@ -8,6 +8,9 @@ import { photoConfig } from "@/config/photos";
 import { artistConfig } from "@/config/artist";
 import { supabase } from "@/lib/supabase";
 import { track } from "@/lib/track";
+import { validateMessage } from "@/lib/filter";
+import { insertMessage } from "@/lib/messages";
+import { moderateIfNeeded } from "@/lib/moderate";
 
 type Step = "intro" | "play" | "result";
 type Rank = { photo: string; wins: number };
@@ -29,7 +32,7 @@ function small(url: string): string {
   return url.replace("name=large", "name=small");
 }
 
-export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void; onRestart?: () => void }) {
+export function WorldCup({ onMessagePosted }: { onMessagePosted?: () => void }) {
   const [step, setStep] = useState<Step>("intro");
   const [pool, setPool] = useState<string[]>([]); // 현재 라운드 대기열
   const [nextRound, setNextRound] = useState<string[]>([]); // 승자들
@@ -37,6 +40,13 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
   const [matchIdx, setMatchIdx] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [ranks, setRanks] = useState<Rank[] | null>(null);
+  // 결과 화면 메시지 폼
+  const [nickname, setNickname] = useState("");
+  const [content, setContent] = useState("");
+  const [formError, setFormError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [postedSeq, setPostedSeq] = useState<number | null>(null);
+  const [posted, setPosted] = useState(false);
   const [totalGames, setTotalGames] = useState(0);
   const [copied, setCopied] = useState(false);
 
@@ -57,7 +67,9 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
   }, [step === "result"]); // 결과가 나오면 갱신
 
   function start() {
-    if (step === "result") onRestart?.(); // 결과에서 다시 하기 → 완주 전까지 게이트 닫힘
+    setPosted(false);
+    setPostedSeq(null);
+    setFormError("");
     const picked = shuffle(photoConfig.photos).slice(0, size);
     setPool(picked);
     setNextRound([]);
@@ -79,7 +91,6 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
       if (winners.length === 1) {
         setWinner(winners[0]);
         setStep("result");
-        onCompleted?.();
         track("worldcup_complete", { winner: winners[0] });
         return;
       }
@@ -94,6 +105,35 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
       // 다다음 경기 미리 로드
       pool.slice((nextMatch + 1) * 2, (nextMatch + 2) * 2).forEach((u) => { const i = new Image(); i.src = small(u); });
     }
+  }
+
+  async function handleMessageSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nickname.trim() || !content.trim()) return;
+    const filter = validateMessage(nickname, content);
+    if (!filter.ok) {
+      setFormError(filter.reason);
+      return;
+    }
+    setBusy(true);
+    setFormError("");
+    const verdict = await moderateIfNeeded(content, filter.suspicious);
+    if (!verdict.allow) {
+      setFormError(verdict.reason ?? "메시지를 다듬어주세요.");
+      setBusy(false);
+      return;
+    }
+    const saved = await insertMessage(nickname, content);
+    if (!saved.ok) {
+      setFormError(saved.reason);
+      setBusy(false);
+      return;
+    }
+    onMessagePosted?.();
+    track("message_posted", { via: "worldcup" });
+    setPostedSeq(saved.message.seq ?? null);
+    setPosted(true);
+    setBusy(false);
   }
 
   function share() {
@@ -185,6 +225,47 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
             </p>
           </div>
           <p className="text-xs text-zinc-400">사진을 길게 누르면 저장할 수 있어요</p>
+
+          {!posted ? (
+            <form
+              onSubmit={handleMessageSubmit}
+              className="w-full max-w-md flex flex-col gap-2.5 rounded-2xl border border-dashed p-4"
+              style={{ borderColor: "var(--artist-primary)" }}
+            >
+              <p className="text-sm font-medium" style={{ color: "var(--artist-text)" }}>
+                🎂 {artistConfig.name}에게 축하 메시지도 남겨주세요!
+              </p>
+              <input
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                maxLength={20}
+                placeholder="닉네임"
+                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-[var(--artist-primary)]"
+              />
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                maxLength={300}
+                rows={2}
+                placeholder={`${artistConfig.name}에게 축하 메시지를 남겨주세요`}
+                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none resize-none focus:border-[var(--artist-primary)]"
+              />
+              {formError && <p className="text-xs text-red-500">{formError}</p>}
+              <button
+                type="submit"
+                disabled={busy}
+                className="self-end rounded-full px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+                style={{ backgroundColor: "var(--artist-primary-deep)" }}
+              >
+                {busy ? "남기는 중..." : "메시지 남기기 💌"}
+              </button>
+            </form>
+          ) : (
+            <p className="text-sm" style={{ color: "var(--artist-primary)" }}>
+              💌 메시지가 남겨졌어요!
+              {postedSeq ? <> 당신은 <b>{String(postedSeq).padStart(4, "0")}번째 {artistConfig.fandomName}</b>예요</> : null}
+            </p>
+          )}
           <div className="flex flex-wrap justify-center gap-2">
             <button onClick={share} className="rounded-full px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--artist-primary-deep)" }}>
               {copied ? "복사됨! ✅" : "자랑하기 📢"}
