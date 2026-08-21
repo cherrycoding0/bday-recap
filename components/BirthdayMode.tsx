@@ -152,7 +152,7 @@ export function BirthdayMode() {
       <div className="w-full max-w-2xl rounded-3xl p-6 text-center shadow-md"
         style={{ background: "linear-gradient(160deg, var(--artist-primary), var(--artist-primary-deep))" }}>
         <p className="font-display text-3xl sm:text-4xl text-white">
-          🎂 {artistConfig.name}, 생일 축하해!
+          {artistConfig.name}야 생일 축하해!
         </p>
         <p className="mt-2 text-sm text-white/85">
           {artistConfig.fandomName}의 마음이 오늘 하루 종일 도착하고 있어요 💖
