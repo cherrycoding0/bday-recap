@@ -14,6 +14,9 @@ export function isBirthdayNow(): boolean {
 }
 
 function candleCount(): number {
+  // config에 candleCount가 있으면 그 값(세는 나이 등), 없으면 만 나이로 자동 계산
+  const override = (artistConfig as { candleCount?: number }).candleCount;
+  if (override && override > 0) return override;
   const year = new Date(artistConfig.birthdayThisYear).getFullYear();
   return Math.max(1, year - (artistConfig.birthYear ?? year - 20));
 }
