@@ -80,7 +80,14 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, m
 
   return (
     <div className="w-full max-w-2xl">
-      {meter && <div>{meter}</div>}
+      {meter && (
+        <div>
+          {meter}
+          <p className="mt-2 text-center text-xs text-zinc-400">
+            💌 위의 <b style={{ color: "var(--artist-primary)" }}>사진드컵</b>이나 <b style={{ color: "var(--artist-primary)" }}>유형 테스트</b>를 마치고 메시지를 남겨주세요
+          </p>
+        </div>
+      )}
 
       {usingSupabase && messages.length > 0 && (
         <div className="mt-5 flex gap-1.5">
