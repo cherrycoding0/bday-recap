@@ -96,54 +96,6 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
     }
   }
 
-  async function saveCard() {
-    if (!winner) return;
-    // X 사진만 캔버스 저장 가능 (위버스는 브라우저 보안 정책상 불가 → 공유 문구로 안내)
-    try {
-      const img = await new Promise<HTMLImageElement>((res, rej) => {
-        const i = new Image();
-        i.crossOrigin = "anonymous";
-        i.onload = () => res(i);
-        i.onerror = rej;
-        i.src = winner;
-        setTimeout(rej, 8000);
-      });
-      const W = 1080, H = 1350;
-      const canvas = document.createElement("canvas");
-      canvas.width = W; canvas.height = H;
-      const ctx = canvas.getContext("2d")!;
-      const c = artistConfig.themeColor;
-      const grad = ctx.createLinearGradient(0, 0, W * 0.4, H);
-      grad.addColorStop(0, c.primary);
-      grad.addColorStop(1, c.primaryDeep);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-      // 폴라로이드 프레임
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(90, 150, 900, 1010);
-      // 사진 (3:4 crop cover)
-      const pw = 840, ph = 860, px = 120, py = 180;
-      const scale = Math.max(pw / img.width, ph / img.height);
-      const sw = pw / scale, sh = ph / scale;
-      ctx.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, px, py, pw, ph);
-      try { await document.fonts.load('60px "NeoDunggeunmo"'); } catch { /* 폴백 */ }
-      ctx.textAlign = "center";
-      ctx.fillStyle = c.primaryDeep;
-      ctx.font = '52px "NeoDunggeunmo", sans-serif';
-      ctx.fillText(`나의 원픽 ${artistConfig.name} 🏆`, W / 2, py + ph + 80);
-      ctx.fillStyle = "rgba(255,255,255,0.85)";
-      ctx.font = '34px "NeoDunggeunmo", sans-serif';
-      ctx.fillText(`${artistConfig.name} 사진드컵 · ${artistConfig.fandomName}`, W / 2, H - 90);
-      const a = document.createElement("a");
-      a.href = canvas.toDataURL("image/png");
-      a.download = `내원픽-${artistConfig.name}.png`;
-      a.click();
-      track("worldcup_card_saved");
-    } catch {
-      alert("이 사진(위버스 출처)은 보안 정책상 카드로 저장할 수 없어요. 사진을 길게 눌러 직접 저장해주세요!");
-    }
-  }
-
   function share() {
     track("worldcup_share");
     const text = `${artistConfig.name} 사진드컵 🏆 내 원픽을 골랐어! 너의 원픽은?`;
@@ -232,10 +184,8 @@ export function WorldCup({ onCompleted, onRestart }: { onCompleted?: () => void;
               나의 원픽 {artistConfig.name} 🏆
             </p>
           </div>
+          <p className="text-xs text-zinc-400">사진을 길게 누르면 저장할 수 있어요</p>
           <div className="flex flex-wrap justify-center gap-2">
-            <button onClick={saveCard} className="rounded-full px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--artist-primary)" }}>
-              카드 저장 📸
-            </button>
             <button onClick={share} className="rounded-full px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--artist-primary-deep)" }}>
               {copied ? "복사됨! ✅" : "자랑하기 📢"}
             </button>
