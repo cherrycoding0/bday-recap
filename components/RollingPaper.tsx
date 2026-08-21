@@ -124,12 +124,9 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, s
   return (
     <div className="w-full max-w-2xl">
       {!showForm && (
-        <div
-          className="rounded-2xl border border-dashed p-5 text-sm text-zinc-500"
-          style={{ borderColor: "var(--artist-primary)", backgroundColor: "var(--artist-card)" }}
-        >
-          💌 위의 <b style={{ color: "var(--artist-primary)" }}>사진드컵</b>이나 <b style={{ color: "var(--artist-primary)" }}>유형 테스트</b>를 마치면 축하 메시지를 남길 수 있어요!
-        </div>
+        <p className="text-center text-xs text-zinc-400">
+          💌 위의 <b style={{ color: "var(--artist-primary)" }}>사진드컵</b>이나 <b style={{ color: "var(--artist-primary)" }}>유형 테스트</b>를 마치면 축하 메시지를 남길 수 있어요
+        </p>
       )}
       {showForm && (
       <form
