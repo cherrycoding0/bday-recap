@@ -55,7 +55,7 @@ export function PhotoHeart() {
       type="button"
       onClick={advance}
       className="polaroid relative bg-white p-3 pb-4 shadow-lg rounded-sm cursor-pointer"
-      aria-label="성호 사진 — 탭하면 다음 사진"
+      aria-label={`${artistConfig.name} 사진 — 탭하면 다음 사진`}
     >
       {/* 사진 영역: 3:4 세로 비율 — 세로 사진이 거의 잘리지 않음 */}
       <div className="relative h-72 w-56 sm:h-80 sm:w-60 overflow-hidden bg-[var(--artist-secondary)]">
@@ -63,7 +63,7 @@ export function PhotoHeart() {
         <img
           key={fadeKey}
           src={order[idx]}
-          alt="성호 사진"
+          alt={`${artistConfig.name} 사진`}
           className="polaroid-img h-full w-full object-cover"
         />
       </div>

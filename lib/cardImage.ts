@@ -151,7 +151,7 @@ export async function renderCard(opts: {
   ctx.fillStyle = "rgba(255,255,255,0.6)";
   ctx.font = pre(28);
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/^https?:\/\//, "");
-  ctx.fillText(site || "성호 생일 축하 페이지", W / 2, H - 80);
+  ctx.fillText(site || `${artistConfig.name} 생일 축하 페이지`, W / 2, H - 80);
 
   return canvas.toDataURL("image/png");
 }

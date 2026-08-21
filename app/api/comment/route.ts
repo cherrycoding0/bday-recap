@@ -2,6 +2,8 @@
 // 키가 없으면 유형별 템플릿으로 폴백 (항상 동작, 비용 0)
 // 비용 방어: IP당 분당 3회 레이트리밋 (인메모리 — 서버리스 인스턴스별이지만 어뷰징 완화엔 충분)
 
+import { artistConfig } from "@/config/artist";
+
 const RATE_LIMIT = 3;
 const WINDOW_MS = 60_000;
 const hits = new Map<string, number[]>();
@@ -16,10 +18,11 @@ function rateLimited(ip: string): boolean {
   return false;
 }
 
+// ✏️ 유형 이름을 바꾸면 여기 키도 함께 바꿀 것 (안 맞으면 기본 문구로 폴백)
 const FALLBACK: Record<string, string> = {
-  "저세상 텐션 올콘형": "이 텐션 성호한테도 분명 전해졌을 듯!",
+  "저세상 텐션 올콘형": `이 텐션 ${artistConfig.name}한테도 분명 전해졌을 듯!`,
   "앞자리 눈맞춤 승부사형": "이 진심이면 눈맞춤은 시간문제잖아.",
-  "단톡방 전파왕형": "오늘도 성호 소식은 당신 덕에 퍼집니다.",
+  "단톡방 전파왕형": `오늘도 ${artistConfig.name} 소식은 당신 덕에 퍼집니다.`,
   "홈파티 집순이형": "포근한 축하가 제일 오래 남는 법.",
   "숨스밍 눈물샘형": "조용한 진심이 제일 깊게 닿아요.",
   "현생도 덕질도 프로형": "꾸준함이 최고의 선물인 거, 알죠?",
