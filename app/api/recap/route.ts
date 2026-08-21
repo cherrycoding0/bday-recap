@@ -39,19 +39,23 @@ const RECAP_PROMPT = (messagesText: string) => `다음은 ${artistConfig.groupNa
 ${messagesText}
 </messages>
 
-이 메시지들을 바탕으로 생일 리캡 카드 내용을 만들어줘. 규칙:
+이 메시지들을 바탕으로 생일 리캡 카드의 제목과 요약을 만들어줘. 규칙:
 - 전체적으로 따뜻하고 애정이 느껴지는 톤, 한국어
 - headline: 15자 이내의 카드 제목 (이모지 1개까지 허용)
 - summary: 팬들이 남긴 마음을 2~3문장으로 요약
-- highlights: 실제 메시지 중 특히 마음이 담긴 것 3개를 골라 원문 그대로 (각 60자 이내로 자르기)
 - 메시지에 없는 내용을 지어내지 마
-- 반드시 아래 JSON 형식으로만 답해: {"headline": "...", "summary": "...", "highlights": ["...", "...", "..."]}`;
+- 반드시 아래 JSON 형식으로만 답해: {"headline": "...", "summary": "..."}`;
 
-function fallbackRecap(messages: { nickname: string; content: string }[]): RecapPayload {
-  const highlights = [...messages]
-    .sort((a, b) => a.content.length - b.content.length)
+// 대표 메시지 = 팬들이 하트로 뽑은 TOP 3 (AI가 아니라 팬덤의 선택)
+function topHearted(messages: { nickname: string; content: string; hearts?: number }[]): string[] {
+  return [...messages]
+    .sort((a, b) => (b.hearts ?? 0) - (a.hearts ?? 0))
     .slice(0, 3)
     .map((m) => `${m.content.slice(0, 60)} — ${m.nickname}`);
+}
+
+function fallbackRecap(messages: { nickname: string; content: string; hearts?: number }[]): RecapPayload {
+  const highlights = topHearted(messages);
   return {
     headline: `${artistConfig.name} 앞으로 도착한 마음 💌`,
     summary: `${messages.length}명의 ${artistConfig.fandomName}가 마음을 남겼어요. 한 줄 한 줄이 전부 진심이에요.`,
@@ -61,12 +65,12 @@ function fallbackRecap(messages: { nickname: string; content: string }[]): Recap
   };
 }
 
-function extractJson(text: string): { headline: string; summary: string; highlights: string[] } | null {
+function extractJson(text: string): { headline: string; summary: string } | null {
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) return null;
   try {
     const parsed = JSON.parse(match[0]);
-    if (typeof parsed.headline === "string" && typeof parsed.summary === "string" && Array.isArray(parsed.highlights)) {
+    if (typeof parsed.headline === "string" && typeof parsed.summary === "string") {
       return parsed;
     }
   } catch {
@@ -132,7 +136,7 @@ export async function GET(request: Request) {
   const supabase = createClient(url, key);
   const { data: messages, error } = await supabase
     .from("messages")
-    .select("nickname, content")
+    .select("nickname, content, hearts")
     .order("created_at", { ascending: true })
     .limit(500);
 
@@ -163,7 +167,7 @@ export async function GET(request: Request) {
         const payload: RecapPayload = {
           headline: parsed.headline,
           summary: parsed.summary,
-          highlights: parsed.highlights.slice(0, 3).map((h) => String(h).slice(0, 80)),
+          highlights: topHearted(messages),
           messageCount: messages.length,
           aiGenerated: true,
         };

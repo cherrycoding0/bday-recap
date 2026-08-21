@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabase, type Message } from "@/lib/supabase";
-import { heartMessage, getHearted, markHearted } from "@/lib/messages";
+import { heartMessage, getHearted, markHearted, fetchMessageCount } from "@/lib/messages";
+
+const PAGE_SIZE = 30;
 
 type SortMode = "latest" | "hearts";
 
@@ -16,17 +18,39 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, m
   const [messages, setMessages] = useState<Message[]>([]);
   const [sort, setSort] = useState<SortMode>("latest");
   const [hearted, setHearted] = useState<Set<string>>(new Set());
+  const [total, setTotal] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const usingSupabase = Boolean(supabase);
 
+  const fetchPage = useCallback(
+    async (from: number) => {
+      if (!supabase) return [];
+      const query = supabase.from("messages").select("*");
+      const ordered =
+        sort === "hearts"
+          ? query.order("hearts", { ascending: false }).order("created_at", { ascending: false })
+          : query.order("created_at", { ascending: false });
+      const { data } = await ordered.range(from, from + PAGE_SIZE - 1);
+      return (data ?? []) as Message[];
+    },
+    [sort]
+  );
+
   const load = useCallback(async () => {
-    if (!supabase) return;
-    const query = supabase.from("messages").select("*");
-    const { data } =
-      sort === "hearts"
-        ? await query.order("hearts", { ascending: false }).order("created_at", { ascending: false })
-        : await query.order("created_at", { ascending: false });
-    if (data) setMessages(data as Message[]);
-  }, [sort]);
+    const [first, count] = await Promise.all([fetchPage(0), fetchMessageCount()]);
+    setMessages(first);
+    if (count !== null) setTotal(count);
+  }, [fetchPage]);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    const next = await fetchPage(messages.length);
+    setMessages((prev) => {
+      const seen = new Set(prev.map((m) => m.id));
+      return [...prev, ...next.filter((m) => !seen.has(m.id))];
+    });
+    setLoadingMore(false);
+  }
 
   useEffect(() => {
     setHearted(getHearted());
@@ -43,10 +67,14 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, m
         const m = payload.new as Message;
         setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [m, ...prev]));
         setLiveIds((prev) => new Set(prev).add(m.id));
+        setTotal((t) => (t === null ? t : t + 1));
       })
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, (payload) => {
         const oldId = (payload.old as { id?: string })?.id;
-        if (oldId) setMessages((prev) => prev.filter((x) => x.id !== oldId));
+        if (oldId) {
+          setMessages((prev) => prev.filter((x) => x.id !== oldId));
+          setTotal((t) => (t === null || t === 0 ? t : t - 1));
+        }
       })
       .subscribe();
     return () => {
@@ -152,6 +180,17 @@ export function RollingPaper({ onMessagePosted, refreshKey, isAdmin, onDelete, m
           </li>
         )}
       </ul>
+
+      {total !== null && messages.length < total && (
+        <button
+          onClick={loadMore}
+          disabled={loadingMore}
+          className="mx-auto mt-4 block rounded-full px-6 py-2.5 text-sm font-medium disabled:opacity-50"
+          style={{ backgroundColor: "var(--artist-card)", color: "var(--artist-primary-deep)" }}
+        >
+          {loadingMore ? "불러오는 중..." : `메시지 더보기 (${(total - messages.length).toLocaleString()}개 남음)`}
+        </button>
+      )}
     </div>
   );
 }

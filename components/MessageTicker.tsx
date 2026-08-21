@@ -59,9 +59,9 @@ export function MessageTicker({ refreshKey }: { refreshKey: number }) {
         .from("messages")
         .select("id, nickname, content, created_at")
         .order("created_at", { ascending: false })
-        .limit(60);
+        .limit(30);
       if (alive && data && data.length > 0) {
-        setItems(shuffle(data as Message[]).slice(0, 12));
+        setItems(shuffle(data as Message[]));
       }
     }
     load();
