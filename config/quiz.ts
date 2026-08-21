@@ -35,7 +35,7 @@ export type FanType = {
 };
 
 export const quizConfig = {
-  title: "성호 파트 찾기", // ✏️
+  title: "성호 파트 찾기 🪽", // ✏️
   subtitle: "나에게 어울리는 성호 파트 찾기",
   goalCount: 904, // ✏️ 1차 목표 (9월 4일 → 904)
   // 목표 사다리 — 앞 목표를 달성하면 자동으로 다음 목표가 열립니다 (연장전).
@@ -47,7 +47,7 @@ export const quizConfig = {
 
   questions: [
     {
-      question: "성호 생일에 난?",
+      question: "9월 4일 당일!! 성호 생일에 난?",
       answers: [
         { label: "혼자서 생카 투어 간다", tension: 1, social: -1 },
         { label: "친구들이랑 성호 생파!", tension: 1, social: 1 },

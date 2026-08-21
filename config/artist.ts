@@ -3,6 +3,7 @@
 
 export const artistConfig = {
   name: "성호",
+  engName: "SUNGHO",
   groupName: "BOYNEXTDOOR",
   fandomName: "ONEDOOR",
   // 실제 생일: 2003-09-04. 페이지에서 카운트다운할 "이번 생일" 날짜(연도는 올해로).
