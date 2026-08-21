@@ -71,18 +71,13 @@ export default function Home() {
       </main>
 
       <footer className="mt-12 flex max-w-md flex-col items-center gap-3 text-center text-xs text-zinc-400">
-        <p>
-          문의{" "}
-          <a
-            href="https://x.com/slfksldf00"
-            target="_blank"
-            rel="noreferrer"
-            className="underline"
-            style={{ color: "var(--artist-primary)" }}
+        <a
+            href="mailto:cherrycoding0@gmail.com"
+            className="flex items-center gap-1.5 hover:text-[#FF6B8A] transition-colors"
           >
-            @slfksldf00
+            <span aria-hidden="true">💌</span>
+            cherrycoding0@gmail.com
           </a>
-        </p>
         <AdminLogin admin={admin} />
       </footer>
       </div>
